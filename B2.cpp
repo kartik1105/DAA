@@ -1,87 +1,33 @@
-#include <bits/stdc++.h>
+#include <iostream>
 using namespace std;
 
-// Function to check if it's possible to complete all tasks in at most 'd' days
-// with the work limit per day as 'per_day'
-bool valid(int per_day, vector<int> task, int d)
-{
-    int cur_day = 0;
-    
-    // Loop through each task to calculate the required days
-    for (int index = 0; index < task.size(); index++)
-    {
-        // Calculate the number of days required for the current task
-        int day_req = ceil((double)(task[index]) / (double)(per_day));
-        cur_day += day_req;
-        
-        // If the total days exceed 'd', return false
-        if (cur_day > d)
-        {
-            return false;
+// Function to calculate maximum profit using a greedy approach
+int maximizeProfit(int arr[], int N) {
+    int profit = 0;
+
+    // Traverse through the array and accumulate profit
+    // by buying at lower prices and selling at higher prices.
+    for (int i = 1; i < N; i++) {
+        // If the current day's price is greater than the previous day's price,
+        // we simulate selling the stock on the current day and buying on the previous day
+        if (arr[i] > arr[i - 1]) {
+            profit += arr[i] - arr[i - 1];
         }
     }
-    // Return true if all tasks can be completed in 'd' days
-    return cur_day <= d;
+
+    return profit;
 }
 
-// Function to find the minimum work per day that allows completion within 'd' days
-int minimumTask(vector<int> task, int d)
-{
-    // Set the range for binary search: from 1 to the maximum task size
-    int left = 1;
-    int right = INT_MAX;
+int main() {
+    // Input array
+    int arr[] = {2, 3, 5};
+    int N = sizeof(arr) / sizeof(arr[0]); // Number of days
 
-    // Find the maximum task size to set the upper bound for binary search
-    for (int index = 0; index < task.size(); index++)
-    {
-        right = max(right, task[index]);
-    }
+    // Call the maximizeProfit function
+    int result = maximizeProfit(arr, N);
 
-    // Variable to store the minimum work per day
-    int per_day_task = 0;
+    // Output the result
+    cout << "Maximum profit: " << result << endl;
 
-    // Perform binary search to find the minimum work per day
-    while (left <= right)
-    {
-        int mid = left + (right - left) / 2;
-        
-        // If the current work per day is valid, try to minimize it further
-        if (valid(mid, task, d))
-        {
-            per_day_task = mid;
-            right = mid - 1;
-        }
-        // If the current work per day is not valid, increase the work per day
-        else
-        {
-            left = mid + 1;
-        }
-    }
-    return per_day_task;
-}
-
-int main()
-{
-    vector<int> task;
-    int num, temp, days;
-
-    // Input number of tasks
-    cout << "Enter the number of tasks to be completed" << endl;
-    cin >> num;
-
-    // Input the size of each task
-    cout << "Enter the size of each task" << endl;
-    for (int i = 0; i < num; i++)
-    {
-        cin >> temp;
-        task.push_back(temp);
-    }
-
-    // Input the number of days available to complete the tasks
-    cout << "Enter the number of days for the task" << endl;
-    cin >> days;
-
-    // Output the minimum work per day required
-    cout << "The minimum amount of work to be done each day is ";
-    cout << minimumTask(task, days) << endl;
+    return 0;
 }
