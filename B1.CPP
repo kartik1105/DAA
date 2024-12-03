@@ -1,106 +1,60 @@
-// Problem Statement No.04
-// Implement a problem of activity selection problem with K persons.
-// Given two arrays S[] and E[] of size N denoting starting and closing time of the shops 
-// and an integer value K denoting the number of people, the task is to find out the maximum number of shops 
-// they can visit in total if they visit each shop optimally based on the following conditions: 
-// i) A shop can be visited by only one person 
-// ii) A person cannot visit another shop if its timing collide with it
-// Input: S[] = {1, 8, 3, 2, 6}, E[] = {5, 10, 6, 5, 9}, K = 2 Output: 4
-
 #include <iostream>
-#include <algorithm>
-#include <set>
+#include <algorithm> // for sorting
+
 using namespace std;
 
-// Comparator
-bool compareBy(const pair<int, int> &a, const pair<int, int> &b)
-{
-    if (a.second != b.second)
-    {
-        return a.second < b.second;
-    }
-    return a.first < b.first;
+// Activity Selection Problem with K persons using Greedy approach
+// Function to sort activities based on their ending times
+bool compare(int a, int b, int S[], int E[]) {
+    return E[a] < E[b]; // Compare the end times of activities
 }
 
-// Function to find maximum shops that can be visited by k persons
+int activitySelection(int S[], int E[], int N, int K) {
+    int count = 0;  // To keep track of the number of activities selected
+    bool visited[N] = {false};  // To track if an activity has been assigned to a person
 
-int maxShops(int *opening, int *closing, int n, int k)
-{
-    // Store opeing and closing time of the shops
-    pair<int, int> a[n];
-    for (int i = 0; i < n; i++)
-    {
-        a[i].first = opening[i];
-        a[i].second = closing[i];
+    // Array to store the indices of activities, based on end times
+    int order[N];
+    for (int i = 0; i < N; i++) {
+        order[i] = i;  // Initialize with the activity indices
     }
 
-    // Sort the pair of array
-    sort(a, a + n, compareBy);
+    // Sort activities based on their end times using the compare function
+    sort(order, order + N, [&](int a, int b) { return compare(a, b, S, E); });
 
-    // Stores the result
-    int count = 0;
-
-    // Storers current number of persons visiting some shop with their ending time
-    multiset<int> st;
-
-    for (int i = 0; i < n; i++)
-    {
-        // Check if the current shop can be assigned to a person in another shop
-        bool flag = false;
-        if (!st.empty())
-        {
-            auto it = st.upper_bound(a[i].first);
-            if (it != st.begin())
-            {
-                it--;
-
-                // Check if any shop closing time is less than current shop opening time
-                if (*it <= a[i].first)
-                {
-                    // Erase the previous shop visited
-                    st.erase(it);
-
-                    // Insert closing time of current shop
-                    st.insert(a[i].second);
-
-                    // Increase the count
-                    count++;
-
-                    flag = true;
-                }
+    // For each activity, check if it can be attended by a person
+    int personsUsed = 0;
+    for (int i = 0; i < N; i++) {
+        // Check if the activity can be attended by a person
+        bool assigned = false;
+        for (int j = 0; j < K; j++) {
+            if (!visited[j]) {
+                visited[j] = true; // Mark this person as busy
+                assigned = true;
+                count++; // Activity can be attended, so increment the count
+                break;
             }
         }
 
-        // No closing time less than current shop opeing time but some persons left
-        if (st.size() < k && flag == false)
-        {
-            st.insert(a[i].second);
-            count++;
+        // Stop if we have allocated activities to all people
+        if (personsUsed == K) {
+            break;
         }
     }
-    // Print the number if shops visited
+
+    // Return the total count of selected activities
     return count;
 }
 
-int main()
-{
-    int shops, per;
-    cout << "Enter the number of shops" << endl;
-    cin >> shops;
-    int S[shops], E[shops];
-    cout << "Enter the number of persons visiting the shops" << endl;
-    cin >> per;
-    cout << "Enter the opening time of each shop" << endl;
-    for (int i = 0; i < shops; i++)
-    {
-        cin >> S[i];
-    }
-    cout << "Enter the closing time of each shop" << endl;
-    for (int i = 0; i < shops; i++)
-    {
-        cin >> E[i];
-    }
+int main() {
+    // Input arrays
+    int S[] = {1, 8, 3, 2, 6};
+    int E[] = {5, 10, 6, 5, 9};
+    int N = sizeof(S) / sizeof(S[0]); // Number of activities
+    int K = 2; // Number of persons
 
-    // Function calls
-    cout << "The maximum number of shops that can be visited are " << maxShops(S, E, shops, per) << endl;
+    int result = activitySelection(S, E, N, K);
+    cout << "Maximum number of shops they can visit: " << result << endl;
+
+    return 0;
 }
