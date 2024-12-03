@@ -1,48 +1,40 @@
-// Problem Statement No.07
-// Implement coin exchange problem
-// Given a integer array of coins[] of size N representing different types of coins and an integer sum.
-// The task is to find the number of ways to make sum by using different combinations from coins[].
-
-// Input sum = 4, coins[] = {1, 2, 3}
-// Output 4
-
-#include <bits/stdc++.h>
+#include <iostream>
 using namespace std;
 
-int countRecur(vector<int> &coins, int n, int sum)
-{
-    if (sum == 0)
-    {
-        return 1;
-    }
-    if (sum < 0 || n == 0)
-    {
-        return 0;
+// Function to find the number of ways to make sum using given coins
+int coinChange(int coins[], int N, int sum) {
+    // Create a table to store results of subproblems
+    int dp[sum + 1];
+
+    // Initialize dp[0] as 1 because there is 1 way to make sum 0 (by choosing no coins)
+    dp[0] = 1;
+
+    // Initialize all other dp[] values as 0
+    for (int i = 1; i <= sum; i++) {
+        dp[i] = 0;
     }
 
-    return countRecur(coins, n, sum - coins[n - 1]) + countRecur(coins, n - 1, sum);
+    // Iterate over all coins
+    for (int i = 0; i < N; i++) {
+        // Update the dp[] table by considering each coin
+        for (int j = coins[i]; j <= sum; j++) {
+            dp[j] += dp[j - coins[i]];
+        }
+    }
+
+    // The answer will be stored in dp[sum]
+    return dp[sum];
 }
 
-int count(vector<int> &coins, int sum)
-{
-    return countRecur(coins, coins.size(), sum);
-}
+int main() {
+    // Input: sum and coins array
+    int sum = 4;
+    int coins[] = {1, 2, 3};
+    int N = sizeof(coins) / sizeof(coins[0]);
 
-int main()
-{
-    vector<int> coins;
-    int sum, num, temp;
-    cout << "Enter the number types of coins" << endl;
-    cin >> num;
-    cout << "Enter the coins" << endl;
-    for (int i = 0; i < num; i++)
-    {
-        cin >> temp;
-        coins.push_back(temp);
-    }
-    cout << "Enter the sum you want to calculate" << endl;
-    cin >> sum;
-    cout<<"The number of combinations possible are ";
-    cout << count(coins, sum);
+    // Call the coinChange function and print the result
+    int result = coinChange(coins, N, sum);
+    cout << "Number of ways to make sum " << sum << " is: " << result << endl;
+
     return 0;
 }
