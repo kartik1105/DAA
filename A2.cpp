@@ -1,50 +1,37 @@
+// Problem Statement No.02
+// Implement a problem of move all the zeroes to end of the array.
+// Given an array of random numbers, Push all the 0s of a given array to the end of the array. The order of the elements should be same.
+// Input: arr[] = {1,2,0,4,3,0,5,0}
+// Output: arr[] = {1,2,4,3,5,0,0,0}
+
 #include <iostream>
 using namespace std;
-
-// Function to move all zeros to the end of the array
-void moveZeroesToEnd(int arr[], int n) {
-    int nonZeroIndex = 0; // Index to keep track of the position of the last non-zero element
-
-    // Traverse through the array
-    for (int i = 0; i < n; i++) {
-        // If the current element is non-zero, move it to the nonZeroIndex position
-        if (arr[i] != 0) {
-            arr[nonZeroIndex] = arr[i]; // Place the non-zero element at the nonZeroIndex
-            // Increment the nonZeroIndex
-            nonZeroIndex++;
+int main()
+{
+    int n;
+    int j = 0;
+    cout << "Enter the number of array elements" << endl;
+    cin >> n;
+    int arr[n];
+    cout << "Enter the array elements" << endl;
+    for (int i = 0; i < n; i++)
+    {
+        cin >> arr[i];
+    }
+    for (int i = 0; i < n; i++)
+    {
+        if (arr[i] != 0)
+        {
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+            // j increases only when it encounters on zero element
+            j++;
         }
     }
-
-    // After placing all non-zero elements, fill the remaining positions with zeros
-    for (int i = nonZeroIndex; i < n; i++) {
-        arr[i] = 0; // Place zero at the remaining positions
+    for (int i = 0; i < n; i++)
+    {
+        cout << arr[i] << " ";
     }
-}
-
-int main() {
-    // Test case 1
-    int arr1[] = {1, 9, 8, 4, 0, 0, 2, 7, 0, 6, 0};
-    int n1 = sizeof(arr1) / sizeof(arr1[0]);
-    moveZeroesToEnd(arr1, n1);
-    
-    // Output the result for test case 1
-    cout << "Modified array (Test case 1): ";
-    for (int i = 0; i < n1; i++) {
-        cout << arr1[i] << " ";
-    }
-    cout << endl;
-
-    // Test case 2
-    int arr2[] = {1, 2, 0, 4, 3, 0, 5, 0};
-    int n2 = sizeof(arr2) / sizeof(arr2[0]);
-    moveZeroesToEnd(arr2, n2);
-    
-    // Output the result for test case 2
-    cout << "Modified array (Test case 2): ";
-    for (int i = 0; i < n2; i++) {
-        cout << arr2[i] << " ";
-    }
-    cout << endl;
-
     return 0;
 }
