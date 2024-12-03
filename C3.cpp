@@ -1,71 +1,54 @@
-// Problem Statement no. 09
-// Check if it is posible to transform one string to another
-// Statement: Given 2 strings s1 and s2(uppercase).
-// Check if it is possible to convert s1 to s2 by performing following operations
-// 1. Make some lowercase letters uppercase
-// 2. Delete all the lowercase letters
-
-// Input s1 = daBcd s2 = ABC
-// Output yes
-
-#include <bits/stdc++.h>
+#include <iostream>
+#include <cstring>
 using namespace std;
 
-// Function to check if s1 can be converted to s2 using rules
-bool check(string s1, string s2)
-{
-    // calculate length
-    int n = s1.length();
-    int m = s2.length();
+// Function to check if we can transform s1 into s2
+bool canTransformToAnother(string s1, string s2) {
+    int len1 = s1.length();
+    int len2 = s2.length();
 
-    bool dp[n + 1][m + 1];
-    for (int i = 0; i <= n; i++)
-    {
-        for (int j = 0; j <= m; j++)
-        {
-            dp[i][j] = false;
-        }
-    }
+    // Create a DP table to store the results
+    bool dp[len1 + 1][len2 + 1];
 
-    // mark 1st position as true
+    // Initialize the DP table
+    memset(dp, false, sizeof(dp));
+
+    // An empty s2 can always be obtained from any s1 by deleting all characters
     dp[0][0] = true;
 
-    for (int i = 0; i < s1.length(); i++)
-    {
-        for (int j = 0; j <= s2.length(); j++)
-        {
-            if (dp[i][j])
-            {
-                // If uppercase in s1 are same as s2
-                if (j < s2.length() && (toupper(s1[i]) == s2[j]))
-                {
-                    dp[i + 1][j + 1] = true;
-                }
+    // If s2 is empty, we can delete all characters from s1 to match s2
+    for (int i = 1; i <= len1; i++) {
+        dp[i][0] = dp[i - 1][0] && (s1[i - 1] >= 'a' && s1[i - 1] <= 'z');
+    }
 
-                if (!isupper(s1[i]))
-                {
-                    dp[i + 1][j] = true;
-                }
+    // Fill the DP table
+    for (int i = 1; i <= len1; i++) {
+        for (int j = 1; j <= len2; j++) {
+            // If current characters match, or we can make the s1 character uppercase to match s2
+            if (s1[i - 1] == s2[j - 1] || (s1[i - 1] >= 'a' && s1[i - 1] <= 'z' && toupper(s1[i - 1]) == s2[j - 1])) {
+                dp[i][j] = dp[i - 1][j - 1];
+            }
+            // If current character of s1 is lowercase, we can delete it
+            if (s1[i - 1] >= 'a' && s1[i - 1] <= 'z') {
+                dp[i][j] = dp[i][j] || dp[i - 1][j];
             }
         }
     }
-    return (dp[n][m]);
+
+    // Return the result from the bottom-right corner of the DP table
+    return dp[len1][len2];
 }
 
-// Driver code
-int main()
-{
-    string s1, s2;
-    cout<<"Enter any two strings to find if rules apply to them"<<endl;
-    cin>>s1;
-    cin>>s2;
-    if (check(s1, s2))
-    {
-        cout << "YES";
-    }
-    else
-    {
-        cout << "NO";
+int main() {
+    // Input strings s1 and s2
+    string s1 = "daBcd";
+    string s2 = "ABC";
+
+    // Call the function to check if transformation is possible
+    if (canTransformToAnother(s1, s2)) {
+        cout << "yes" << endl;
+    } else {
+        cout << "no" << endl;
     }
 
     return 0;
