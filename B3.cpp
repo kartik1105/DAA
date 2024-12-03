@@ -1,72 +1,65 @@
-// Problem Statement No.06
-// Implement a problem of minimum work to be done per day to finish given tasks within D days problem
-// Given an array task[] of size N denoting amount of work to be done for each task
-// The problem is to find the minimum amount of work to be done on each day
-// so that all the tasks can be completed in at most D days.
-// On one day work can be done for only one task
+#include <iostream>
+#include <algorithm> // For max() function
 
-// Input task[] = {3, 4, 7, 15} days = 10
-// Output = 4
-
-#include <bits/stdc++.h>
 using namespace std;
 
-bool valid(int per_day, vector<int> task, int d)
-{
-    int cur_day = 0;
-    for (int index = 0; index < task.size(); index++)
-    {
-        int day_req = ceil((double)(task[index]) / (double)(per_day));
-        cur_day += day_req;
-        if (cur_day > d)
-        {
+// Function to check if it's possible to complete tasks with a given work per day
+bool canCompleteTasks(int tasks[], int N, int D, int workPerDay) {
+    int daysRequired = 1;  // We start with the first day
+    int currentWork = 0;
+
+    for (int i = 0; i < N; i++) {
+        // If adding the current task exceeds the allowed work per day
+        if (currentWork + tasks[i] > workPerDay) {
+            daysRequired++;  // We need another day
+            currentWork = tasks[i];  // Start a new day with the current task
+        } else {
+            currentWork += tasks[i];  // Add the current task to today's work
+        }
+
+        // If the days required exceeds D, we return false
+        if (daysRequired > D) {
             return false;
         }
     }
-    return cur_day <= d;
+    return true;
 }
 
-int minimumTask(vector<int> task, int d)
-{
-    int left = 1;
-    int right = INT_MAX;
-
-    for (int index = 0; index < task.size(); index++)
-    {
-        right = max(right, task[index]);
+// Function to find the minimum work per day using binary search
+int findMinimumWork(int tasks[], int N, int D) {
+    int left = *max_element(tasks, tasks + N);  // The work per day cannot be less than the largest task
+    int right = 0;
+    for (int i = 0; i < N; i++) {
+        right += tasks[i];  // The maximum work per day is the sum of all tasks
     }
 
-    int per_day_task = 0;
-    while (left <= right)
-    {
+    int result = right;
+
+    while (left <= right) {
         int mid = left + (right - left) / 2;
-        if (valid(mid, task, d))
-        {
-            per_day_task = mid;
+
+        // Check if it's possible to complete tasks with 'mid' work per day
+        if (canCompleteTasks(tasks, N, D, mid)) {
+            result = mid;  // If it's possible, try for a lower work per day
             right = mid - 1;
-        }
-        else
-        {
-            left = mid + 1;
+        } else {
+            left = mid + 1;  // If it's not possible, we need more work per day
         }
     }
-    return per_day_task;
+    return result;
 }
 
-int main()
-{
-    vector<int> task;
-    int num, temp, days;
-    cout << "Enter the number of tasks to be completed" << endl;
-    cin >> num;
-    cout << "Enter the size of each task" << endl;
-    for (int i = 0; i < num; i++)
-    {
-        cin >> temp;
-        task.push_back(temp);
-    }
-    cout << "Enter the number of days for the task" << endl;
-    cin >> days;
-    cout << "The minimum amount of work to be done each day is ";
-    cout << minimumTask(task, days) << endl;
+int main() {
+    // Input task array and the number of days
+    int tasks[] = {3, 4, 7, 15};
+    int N = sizeof(tasks) / sizeof(tasks[0]);  // Number of tasks
+    int D = 10;  // Number of days
+
+    // Call the function to find the minimum work per day
+    int result = findMinimumWork(tasks, N, D);
+
+    // Output the result
+    cout << "The minimum amount of work to be done each day is: " << result << endl;
+
+    return 0;
 }
