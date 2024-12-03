@@ -1,61 +1,40 @@
-// Problem Statement No.08
-// Implement subset problem
-// Statement: Given a set of non-negative integers and a value sum,
-// The task is to check if there is a subset of the given set whose sum is equal to the given sum
-
-// Input: set[] = {3, 34, 4, 12, 5, 2} sum = 9
-// Output: = True
-
-#include <bits/stdc++.h>
+#include <iostream>
 using namespace std;
 
-bool isSubsetSumRec(vector<int> &arr, int n, int sum)
-{
-    if (sum == 0)
-    {
-        return true;
-    }
-    if (n == 0)
-    {
-        return false;
+// Function to find the number of ways to make sum using given coins
+int coinChange(int coins[], int N, int sum) {
+    // Create a table to store results of subproblems
+    int dp[sum + 1];
+
+    // Initialize dp[0] as 1 because there is 1 way to make sum 0 (by choosing no coins)
+    dp[0] = 1;
+
+    // Initialize all other dp[] values as 0
+    for (int i = 1; i <= sum; i++) {
+        dp[i] = 0;
     }
 
-    if (arr[n - 1] > sum)
-    {
-        return isSubsetSumRec(arr, n - 1, sum);
+    // Iterate over all coins
+    for (int i = 0; i < N; i++) {
+        // Update the dp[] table by considering each coin
+        for (int j = coins[i]; j <= sum; j++) {
+            dp[j] += dp[j - coins[i]];
+        }
     }
 
-    return isSubsetSumRec(arr, n - 1, sum) || isSubsetSumRec(arr, n - 1, sum - arr[n - 1]);
+    // The answer will be stored in dp[sum]
+    return dp[sum];
 }
 
-bool isSubsetSum(vector<int> &arr, int sum)
-{
-    return isSubsetSumRec(arr, arr.size(), sum);
-}
+int main() {
+    // Input: sum and coins array
+    int sum = 4;
+    int coins[] = {1, 2, 3};
+    int N = sizeof(coins) / sizeof(coins[0]);
 
-int main()
-{
-    vector<int> arr;
-    int sum, num, temp;
-    cout << "Enter the number of array elements" << endl;
-    cin >> num;
-    cout << "Enter the array elements" << endl;
-    for (int i = 0; i < num; i++)
-    {
-        cin >> temp;
-        arr.push_back(temp);
-    }
-    cout << "Enter the sum you are searching for" << endl;
-    cin >> sum;
-
-    if (isSubsetSum(arr, sum))
-    {
-        cout << "True" << endl;
-    }
-    else
-    {
-        cout << "False" << endl;
-    }
+    // Call the coinChange function and print the result
+    int result = coinChange(coins, N, sum);
+    cout << "Number of ways to make sum " << sum << " is: " << result << endl;
 
     return 0;
 }
